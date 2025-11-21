@@ -10,11 +10,12 @@ const nextConfig: NextConfig = {
     "clone-deep",
     "shallow-clone",
     "puppeteer-extra-plugin-user-preferences",
+    "puppeteer-extra-plugin-user-data-dir",
   ],
   experimental: {
     // @ts-ignore
     outputFileTracingIncludes: {
-      "/api/proxy": ["./node_modules/puppeteer-extra-plugin-stealth/**/*"],
+      "/api/proxy": ["./node_modules/puppeteer-extra-plugin-stealth/**/*", "./node_modules/puppeteer-extra-plugin-user-preferences/**/*", "./node_modules/puppeteer-extra-plugin-user-data-dir/**/*"],
     },
   },
 };

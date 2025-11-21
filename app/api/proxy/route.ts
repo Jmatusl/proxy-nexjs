@@ -110,10 +110,11 @@ export async function POST(req: Request) {
       const { addExtra } = require("puppeteer-extra");
       const StealthPlugin = require("puppeteer-extra-plugin-stealth");
 
-      // Force inclusion of is-plain-object for Vercel
+      // Force inclusion of dependencies for Vercel
       require("is-plain-object");
       require("shallow-clone");
       require("puppeteer-extra-plugin-user-preferences");
+      require("puppeteer-extra-plugin-user-data-dir");
 
       const puppeteer = addExtra(puppeteerCore);
       puppeteer.use(StealthPlugin());
