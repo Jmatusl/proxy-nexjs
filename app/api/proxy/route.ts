@@ -113,6 +113,7 @@ export async function POST(req: Request) {
       // Force inclusion of is-plain-object for Vercel
       require("is-plain-object");
       require("shallow-clone");
+      require("puppeteer-extra-plugin-user-preferences");
 
       const puppeteer = addExtra(puppeteerCore);
       puppeteer.use(StealthPlugin());
