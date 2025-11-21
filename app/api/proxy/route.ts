@@ -161,17 +161,34 @@ export async function POST(req: Request) {
       await page.setUserAgent(userAgent);
 
       // Navigate
-      await page.goto(url, { waitUntil: "networkidle2", timeout: 30000 });
+      // Use domcontentloaded to interact faster, networkidle2 might hang if streams are open
+      await page.goto(url, { waitUntil: "domcontentloaded", timeout: 30000 });
 
       // Check for Cloudflare challenge clearing
       try {
         const title = await page.title();
-        if (title.includes("Just a moment...")) {
+        const content = await page.content();
+
+        if (title.includes("Just a moment...") || content.includes("challenges.cloudflare.com")) {
           console.log("[Proxy] Waiting for challenge to clear...");
-          await page.waitForFunction(() => !document.title.includes("Just a moment..."), { timeout: 10000 });
+
+          // Simulate mouse movement
+          try {
+            await page.mouse.move(100, 100);
+            await page.mouse.move(200, 200);
+            await page.mouse.move(150, 150);
+          } catch (e) {}
+
+          // Wait specifically for the title to change or the challenge container to disappear
+          // Increasing timeout to 25s (leaving some buffer in the 60s function limit)
+          await page.waitForFunction(() => !document.title.includes("Just a moment..."), { timeout: 25000 });
+
+          // Wait for network idle after challenge potentially solves
+          // Using a custom wait since waitForNetworkIdle might not be in older puppeteer-core or might flake
+          await new Promise((r) => setTimeout(r, 3000));
         }
       } catch (e) {
-        // Ignore timeout waiting for title change
+        console.log("[Proxy] Timeout or error waiting for challenge:", e);
       }
 
       const content = await page.content();
